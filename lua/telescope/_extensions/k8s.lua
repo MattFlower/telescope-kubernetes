@@ -77,7 +77,6 @@ local kubernetes_objects = function(opts)
         local selection = action_state.get_selected_entry()
         local entry = selection.value
         local command = ":tabnew | r !/opt/homebrew/bin/kubectl get " .. entry.type .. " --show-managed-fields=false -n " .. entry.namespace .. " " .. entry.name .. " -o yaml | yq e 'del(.metadata.annotations) | del(.metadata.creationTimestamp) | del(.metadata.resourceVersion) | del(.metadata.selfLink) | del(.metadata.uid)' - "
-        print(command)
         vim.cmd(command)
       end)
       return true
