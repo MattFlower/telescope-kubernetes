@@ -76,6 +76,8 @@ local kubernetes_objects = function(opts)
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
         local entry = selection.value
+        local temp_file_name = tempname() .. '.yml'
+        print("Saving to file " .. temp_file_name)
         local command = ":tabnew | r !/opt/homebrew/bin/kubectl get " .. entry.type .. " --show-managed-fields=false -n " .. entry.namespace .. " " .. entry.name .. " -o yaml | yq e 'del(.metadata.annotations) | del(.metadata.creationTimestamp) | del(.metadata.resourceVersion) | del(.metadata.selfLink) | del(.metadata.uid)' - "
         vim.cmd(command)
       end)
