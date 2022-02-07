@@ -27,13 +27,11 @@ This is currently a work in progress -- don't use it yet.
     
 # Usage
 Run the following:
-
     ```
     :Telescope k8s
     ```
 
 # Configuration when things go wrong
-
     ```lua
     require("telescope").setup {
       extensions = {
