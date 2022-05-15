@@ -7,7 +7,6 @@ local pickers = require('telescope.pickers')
 local previewers = require('telescope.previewers')
 local telescope = require('telescope')
 
-
 local kubectl_location = ""
 local object_types = {}
 local fields_to_filter = {}
@@ -132,7 +131,10 @@ local kubernetes_objects = function(opts)
         local entry = selection.value
         local temp_file_name = entry.name .. '.yml'
         -- Create a new tab and fetch the object into that tab
-        local command = ":tabnew " .. temp_file_name .. " | r !/opt/homebrew/bin/kubectl get " .. entry.type .. " --show-managed-fields=false -n " .. entry.namespace .. " " .. entry.name .. " -o yaml | yq e 'del(.metadata.annotations) | del(.metadata.creationTimestamp) | del(.metadata.resourceVersion) | del(.metadata.selfLink) | del(.metadata.uid)' - "
+        if vim.fn.bufexists(temp_file_name) == 1 then
+          vim.cmd(":bunload " .. temp_file_name)  
+        end
+        local command = ":tabnew " .. temp_file_name .. " | r !" .. kubectl_location .. " get " .. entry.type .. " --show-managed-fields=false -n " .. entry.namespace .. " " .. entry.name .. " -o yaml | yq e 'del(.metadata.annotations) | del(.metadata.creationTimestamp) | del(.metadata.resourceVersion) | del(.metadata.selfLink) | del(.metadata.uid)' - "
         vim.cmd(command)
         vim.cmd(":setlocal buftype=nofile")
       end)

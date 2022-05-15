@@ -5,7 +5,8 @@ This is currently a work in progress -- don't use it yet.
 
 # Requirements
 * Kubectl must be installed, it is used to fetch objects, apply, etc
-* jq must be installed
+* yq must be installed.  (apt install yq, brew install yq, or similar depending on your OS)
+
 
 # Installation
 1. Install [https://github.com/nvim-telescope/telescope.nvim](Telescope) first.
@@ -27,34 +28,36 @@ This is currently a work in progress -- don't use it yet.
     
 # Usage
 Run the following:
-    ```
-    :Telescope k8s
-    ```
+```
+:Telescope k8s
+```
 
 # Configuration when things go wrong
-    ```lua
-    require("telescope").setup {
-      extensions = {
-        k8s = {
-          kubectl_location = "/opt/homebrew/bin/kubectl",
-          object_types = { "pod", "secret", "deployment", "service", "daemonset", "replicaset", "statefulset", "persistentvolume", "persistentvolumeclaim" },
-          fields_to_filter = { 
-            ".metadata.annotations",
-            ".metadata.creationTimestamp",
-            ".metadata.resourceVersion",
-            ".metadata.selfLink",
-            ".metadata.uid",
-          }
-        }
+
+The following set custom values for configuration fields.  The listed values are the defaults.
+```lua
+require("telescope").setup {
+  extensions = {
+    k8s = {
+      kubectl_location = "/opt/homebrew/bin/kubectl",
+      object_types = { "pod", "secret", "deployment", "service", "daemonset", "replicaset", "statefulset", "persistentvolume", "persistentvolumeclaim" },
+      fields_to_filter = { 
+        ".metadata.annotations",
+        ".metadata.creationTimestamp",
+        ".metadata.resourceVersion",
+        ".metadata.selfLink",
+        ".metadata.uid",
       }
     }
-    ```
+  }
+}
+```
 
-    | Field Name       | What it Does |
-    | ---------------- | ------------ |
-    | kubectl_location | kubectl provides all the data that is used for this plugin.  When the extension starts up it looks for kubectl in /usr/bin/kubectl, /usr/local/bin/kubectl, and /opt/homebrew/bin/kubectl.  If it can't find it in one of those locations, or if you want to specify a different one, specify the absolute path to the kubectl executable. |
-    | object_types     | The type of objects we will list from kubernetes.  We won't load any other types |
-    | fields_to_filter | These fields will not appear in the source of any object you select. |
+| Field Name       | What it Does |
+| ---------------- | ------------ |
+| kubectl_location | kubectl provides all the data that is used for this plugin.  When the extension starts up it looks for kubectl in /usr/bin/kubectl, /usr/local/bin/kubectl, and /opt/homebrew/bin/kubectl.  If it can't find it in one of those locations, or if you want to specify a different one, specify the absolute path to the kubectl executable. |
+| object_types     | The type of objects we will list from kubernetes.  We won't load any other types |
+| fields_to_filter | These fields will not appear in the source of any object you select. |
 
 
 # Things to do:
@@ -64,6 +67,6 @@ Run the following:
   - [X] On selection of an object, pop open a new tab with the source inside
 - [X] Make the execution more configurable
   - [X] Location of kubectl needs to be configurable
-- [ ] Check to make sure that jq and kubectl are installed and make reasonable error messages
+- [ ] Check to make sure that yq and kubectl are installed and make reasonable error messages
 - [ ] Commands to apply changes to the buffers back to kubernetes.  (Effectively kubectl apply -f %)
 
