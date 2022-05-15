@@ -93,6 +93,10 @@ local function file_exists(name)
   if f ~= nil then io.close(f) return true else return false end
 end
 
+local function which(command)
+  return vim.cmd("!which " .. command)
+end
+
 -- Given a list of filenames, return the first one that actually exists in the filesystem
 local function first_existing_file(files)
   for key, value in ipairs(files) do
@@ -134,7 +138,7 @@ local kubernetes_objects = function(opts)
         if vim.fn.bufexists(temp_file_name) == 1 then
           vim.cmd(":bunload " .. temp_file_name)  
         end
-        local command = ":tabnew " .. temp_file_name .. " | r !" .. kubectl_location .. " get " .. entry.type .. " --show-managed-fields=false -n " .. entry.namespace .. " " .. entry.name .. " -o yaml | yq e 'del(.metadata.annotations) | del(.metadata.creationTimestamp) | del(.metadata.resourceVersion) | del(.metadata.selfLink) | del(.metadata.uid)' - "
+        local command = ":tabnew " .. temp_file_name .. " | 0r !" .. kubectl_location .. " get " .. entry.type .. " --show-managed-fields=false -n " .. entry.namespace .. " " .. entry.name .. " -o yaml | yq e 'del(.metadata.annotations) | del(.metadata.creationTimestamp) | del(.metadata.resourceVersion) | del(.metadata.selfLink) | del(.metadata.uid)' - "
         vim.cmd(command)
         vim.cmd(":setlocal buftype=nofile")
       end)
@@ -145,7 +149,7 @@ end
 
 return telescope.register_extension({
   setup = function(ext_config) 
-    kubectl_location = ext_config.kubectl_location or first_existing_file({"/usr/bin/kubectl", "/usr/local/bin/kubectl", "/opt/homebrew/bin/kubectl"})
+    kubectl_location = ext_config.kubectl_location or which("kubectl") or first_existing_file({"/usr/bin/kubectl", "/usr/local/bin/kubectl", "/opt/homebrew/bin/kubectl"})
     assert(file_exists(kubectl_location), "kubectl_location points to a location that doesn't exist (" .. kubectl_location .. ").")
 
     object_types = ext_config.object_types or {'pod','secret','deployment','service','daemonset','replicaset','statefulset','persistentvolume','persistentvolumeclaim'}
