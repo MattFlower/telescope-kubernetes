@@ -8,6 +8,7 @@ local previewers = require('telescope.previewers')
 local telescope = require('telescope')
 
 local kubectl_location = ""
+local yq_location = "" 
 local object_types = {}
 local fields_to_filter = {}
 
@@ -94,8 +95,8 @@ local function file_exists(name)
 end
 
 local function which(command)
-  local result = vim.cmd("!which " .. command)
-  if result ~= nil then return false else return result end
+  local statuscode, result = vim._system("which " .. command)
+  if statuscode == 0 then return false else return result end
 end
 
 -- Given a list of filenames, return the first one that actually exists in the filesystem
@@ -139,7 +140,7 @@ local kubernetes_objects = function(opts)
         if vim.fn.bufexists(temp_file_name) == 1 then
           vim.cmd(":bunload " .. temp_file_name)  
         end
-        local command = ":tabnew " .. temp_file_name .. " | 0r !" .. kubectl_location .. " get " .. entry.type .. " --show-managed-fields=false -n " .. entry.namespace .. " " .. entry.name .. " -o yaml | yq e 'del(.metadata.annotations) | del(.metadata.creationTimestamp) | del(.metadata.resourceVersion) | del(.metadata.selfLink) | del(.metadata.uid)' - "
+        local command = ":tabnew " .. temp_file_name .. " | 0r !" .. kubectl_location .. " get " .. entry.type .. " --show-managed-fields=false -n " .. entry.namespace .. " " .. entry.name .. " -o yaml | " .. yq_location .. " e 'del(.metadata.annotations) | del(.metadata.creationTimestamp) | del(.metadata.resourceVersion) | del(.metadata.selfLink) | del(.metadata.uid)' - "
         vim.cmd(command)
         vim.cmd(":setlocal buftype=nofile")
       end)
@@ -157,6 +158,9 @@ return telescope.register_extension({
   setup = function(ext_config) 
     kubectl_location = ext_config.kubectl_location or which("kubectl") or first_existing_file({"/usr/bin/kubectl", "/usr/local/bin/kubectl", "/opt/homebrew/bin/kubectl"})
     assert(file_exists(kubectl_location), "kubectl_location points to a location that doesn't exist (" .. kubectl_location .. ").")
+
+    yq_location = ext_config.yq_location or which("yq") or first_existing_file({"/usr/bin/yq", "/usr/local/bin/yq", "/opt/homebrew/bin/yq"})
+    assert(file_exists(yq_location), "yq cannot be found.  Please install yq or, if already installed, indicated location using the yq_location config")
 
     object_types = ext_config.object_types or {'pod','secret','deployment','service','daemonset','replicaset','statefulset','persistentvolume','persistentvolumeclaim'}
     fields_to_filter = ext_config.fields_to_filter or {'.metadata.annotations', '.metadata.creationTimestamp', '.metadata.resourceVersion', '.metadata.selfLink', '.metadata.uid'}

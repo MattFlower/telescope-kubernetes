@@ -43,6 +43,7 @@ require("telescope").setup {
   extensions = {
     k8s = {
       kubectl_location = "/opt/homebrew/bin/kubectl",
+      yq_location = "/opt/homebrew/bin/yq",
       object_types = { "pod", "secret", "deployment", "service", "daemonset", "replicaset", "statefulset", "persistentvolume", "persistentvolumeclaim" },
       fields_to_filter = { 
         ".metadata.annotations",
@@ -70,6 +71,6 @@ require("telescope").setup {
   - [X] On selection of an object, pop open a new tab with the source inside
 - [X] Make the execution more configurable
   - [X] Location of kubectl needs to be configurable
-- [ ] Check to make sure that yq and kubectl are installed and make reasonable error messages
-- [ ] Commands to apply changes to the buffers back to kubernetes.  (Effectively kubectl apply -f %)
+- [X] Check to make sure that yq and kubectl are installed and make reasonable error messages
+- [X] Commands to apply changes to the buffers back to kubernetes.  (Effectively kubectl apply -f %)
 
