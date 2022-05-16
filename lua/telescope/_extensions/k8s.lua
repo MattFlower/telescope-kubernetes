@@ -88,13 +88,14 @@ local entry_maker = function(opts)
   end
 end
 
-local function file_exists(name) 
+local function file_exists(name)
   local f = io.open(name, "r")
   if f ~= nil then io.close(f) return true else return false end
 end
 
 local function which(command)
-  return vim.cmd("!which " .. command)
+  local result = vim.cmd("!which " .. command)
+  if result ~= nil then return false else return result end
 end
 
 -- Given a list of filenames, return the first one that actually exists in the filesystem
@@ -103,7 +104,7 @@ local function first_existing_file(files)
     if file_exists(value) then
       return value
     end
-  end 
+  end
 end
 
 
@@ -146,6 +147,11 @@ local kubernetes_objects = function(opts)
     end,
   }):find()
 end
+
+vim.api.nvim_create_user_command("KubeApply", function ()
+  local command = ":write !" .. kubectl_location .. " apply -f - "
+  vim.cmd(command)
+end, {})
 
 return telescope.register_extension({
   setup = function(ext_config) 

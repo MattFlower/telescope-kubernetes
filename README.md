@@ -1,11 +1,9 @@
 # telescope-kubernetes
-Telescope add on to allow editing of Objects in Kubernetes
-
-This is currently a work in progress -- don't use it yet.
+Telescope add-on to allow editing of Objects in Kubernetes.  This is something you probably shouldn't really be doing that often, but it can be helpful when prototyping.
 
 # Requirements
 * Kubectl must be installed, it is used to fetch objects, apply, etc
-* yq must be installed.  (apt install yq, brew install yq, or similar depending on your OS)
+* yq must be installed (apt install yq, brew install yq, or similar depending on your OS)
 
 
 # Installation
@@ -31,6 +29,11 @@ Run the following:
 ```
 :Telescope k8s
 ```
+
+Select a kubernetes object to open a new tab with source for that object.  If desired, modify the buffer and run ```:KubeApply``` to apply the changes to kubernetes.
+```
+```
+
 
 # Configuration when things go wrong
 
